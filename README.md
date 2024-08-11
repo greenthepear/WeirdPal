@@ -1,5 +1,6 @@
-**WeirdPal** is a web-app that makes writing parody songs easier by putting the old and new lyrics next to eachother and counting their syllables for matching the prosody.
+**WeirdPal** is a web app for writing parody songs.
 
+It shows the original and parody lines right next to each other and counts the syllables, all to make matching the flow and *prosody~* easier for you.
 
 Made with **[Elm](https://elm-lang.org/)** because Elm is cool. 
 
@@ -7,4 +8,9 @@ Made with **[Elm](https://elm-lang.org/)** because Elm is cool.
 
     $ elm make src/Main.elm --output public/index.js
 
-or just `./make.sh` and open `public/index.html`.
+(or just run `make.sh` that has optimizations)
+
+Open `public/index.html`.
+
+# License
+Under GPL-3.0 license, but that only goes for the software itself. Any song you make with this is all yours, but credit or a link to the website would be appreciated. 🙏

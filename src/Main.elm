@@ -199,13 +199,13 @@ makeSongLineDiv ln =
 view : Model -> Html Msg
 view model =
     div containerStyle
-        [ div [ style "width" "60%" ]
+        [ div [ style "width" "60%", style "overflow-y" "scroll" ]
             (Dict.values
                 model.content
                 |> List.map makeSongLineDiv
             )
         , div rightContainerStyle
-            [ div [ style "height" "95%" ]
+            [ div [ style "height" "95%", style "padding" "0% 2% 2% 2%" ]
                 [ p [] [ text "Original:" ]
                 , textarea
                     [ onInput ChangeOriginalFromMultiline
@@ -214,7 +214,7 @@ view model =
                     ]
                     []
                 ]
-            , div [ style "height" "95%" ]
+            , div [ style "height" "95%", style "padding" "2% 2% 2% 2%" ]
                 [ p [] [ text "Changed:" ]
                 , textarea
                     [ onInput ChangeParodyFromMultiline
