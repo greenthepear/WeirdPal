@@ -166,7 +166,7 @@ view model =
                 |> List.map makeSongLineDiv
             )
         , div rightContainerStyle
-            [ div [ style "height" "100%" ]
+            [ div [ style "height" "95%" ]
                 [ p [] [ text "Original:" ]
                 , textarea
                     [ onInput ChangeOriginalFromMultiline
@@ -175,7 +175,7 @@ view model =
                     ]
                     []
                 ]
-            , div [ style "height" "100%" ]
+            , div [ style "height" "95%" ]
                 [ p [] [ text "Changed:" ]
                 , textarea [ style "width" "100%", style "height" "50%" ] []
                 ]
