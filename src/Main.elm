@@ -30,6 +30,7 @@ type alias Line =
 
 type alias Model =
     { content : Dict Int Line
+    , fullParody : String
     }
 
 
@@ -40,6 +41,7 @@ init =
             [ ( 0, Line 0 "This is a placeholder!" "" )
             , ( 1, Line 1 "Add the original lyrics on the right" "" )
             ]
+    , fullParody = ""
     }
 
 
@@ -64,12 +66,26 @@ syllableCount str =
     Regex.find syllable str |> List.length
 
 
+changeOriginal : Dict Int Line -> Int -> String -> Dict Int Line
+changeOriginal dict lineNum newString =
+    Dict.update lineNum
+        (\maybeLine ->
+            case maybeLine of
+                Just line ->
+                    Just { line | original = newString }
+
+                Nothing ->
+                    Just { number = lineNum, original = newString, parody = "" }
+        )
+        dict
+
+
 update : Msg -> Model -> Model
 update msg model =
     case msg of
         Change lineNum newString ->
-            { model
-                | content =
+            let
+                newDict =
                     Dict.update lineNum
                         (\maybeLine ->
                             case maybeLine of
@@ -80,29 +96,28 @@ update msg model =
                                     Just { number = lineNum, parody = newString, original = "" }
                         )
                         model.content
+            in
+            { model
+                | content = newDict
+                , fullParody =
+                    Dict.foldl
+                        (\_ line full -> full ++ line.parody ++ "\n")
+                        ""
+                        newDict
             }
 
         ChangeOriginal lineNum newString ->
             { model
-                | content =
-                    Dict.update lineNum
-                        (\maybeLine ->
-                            case maybeLine of
-                                Just line ->
-                                    Just { line | original = newString }
-
-                                Nothing ->
-                                    Just { number = lineNum, original = newString, parody = "" }
-                        )
-                        model.content
+                | content = changeOriginal model.content lineNum newString
             }
 
         ChangeOriginalFromMultiline str ->
-            let
-                changes =
-                    String.lines str |> List.indexedMap (\i e -> ChangeOriginal i e)
-            in
-            List.foldl update model changes
+            { model
+                | content =
+                    String.lines str
+                        |> List.indexedMap Tuple.pair
+                        |> List.foldl (\( i, line ) d -> changeOriginal d i line) model.content
+            }
 
 
 
@@ -177,7 +192,7 @@ view model =
                 ]
             , div [ style "height" "95%" ]
                 [ p [] [ text "Changed:" ]
-                , textarea [ style "width" "100%", style "height" "50%" ] []
+                , textarea [ value model.fullParody, style "width" "100%", style "height" "50%" ] []
                 ]
             ]
         ]
