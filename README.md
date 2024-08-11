@@ -8,7 +8,7 @@ Made with **[Elm](https://elm-lang.org/)** because Elm is cool.
 
     $ elm make src/Main.elm --output public/index.js
 
-(or just run `make.sh` that has optimizations)
+(or just run `make.sh`. Add `-m` for minification)
 
 Open `public/index.html`.
 
