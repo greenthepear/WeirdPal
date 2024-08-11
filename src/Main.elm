@@ -53,6 +53,7 @@ type Msg
     = Change Int String
     | ChangeOriginal Int String
     | ChangeOriginalFromMultiline String
+    | ChangeParodyFromMultiline String
 
 
 syllable : Regex.Regex
@@ -76,6 +77,20 @@ changeOriginal dict lineNum newString =
 
                 Nothing ->
                     Just { number = lineNum, original = newString, parody = "" }
+        )
+        dict
+
+
+changeParody : Dict Int Line -> Int -> String -> Dict Int Line
+changeParody dict lineNum newString =
+    Dict.update lineNum
+        (\maybeLine ->
+            case maybeLine of
+                Just line ->
+                    Just { line | parody = newString }
+
+                Nothing ->
+                    Just { number = lineNum, original = "", parody = newString }
         )
         dict
 
@@ -119,6 +134,15 @@ update msg model =
                         |> List.foldl (\( i, line ) d -> changeOriginal d i line) model.content
             }
 
+        ChangeParodyFromMultiline str ->
+            { model
+                | content =
+                    String.lines str
+                        |> List.indexedMap Tuple.pair
+                        |> List.foldl (\( i, line ) d -> changeParody d i line) model.content
+                , fullParody = str
+            }
+
 
 
 -- VIEW
@@ -157,7 +181,7 @@ makeSongLine ln =
     [ div lineCountStyle [ text (syllableCount ln.original |> String.fromInt) ]
     , div [] [ input [ value ln.original, disabled True, style "width" "98%" ] [] ]
     , div lineCountStyle [ text <| String.fromInt <| syllableCount <| ln.parody ]
-    , div [] [ input [ placeholder "...", onInput (Change ln.number), style "width" "98%" ] [] ]
+    , div [] [ input [ value ln.parody, placeholder "...", onInput (Change ln.number), style "width" "98%" ] [] ]
     ]
 
 
@@ -192,7 +216,13 @@ view model =
                 ]
             , div [ style "height" "95%" ]
                 [ p [] [ text "Changed:" ]
-                , textarea [ value model.fullParody, style "width" "100%", style "height" "50%" ] []
+                , textarea
+                    [ onInput ChangeParodyFromMultiline
+                    , value model.fullParody
+                    , style "width" "100%"
+                    , style "height" "50%"
+                    ]
+                    []
                 ]
             ]
         ]
